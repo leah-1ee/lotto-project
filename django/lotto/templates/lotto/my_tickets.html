@@ -1,0 +1,37 @@
+{% extends 'lotto/base.html' %}
+{% block title %}내 복권{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h3 class="mb-4">📋 내 복권 목록</h3>
+  {% if tickets %}
+  <div class="row g-3">
+    {% for ticket in tickets %}
+    <div class="col-md-6">
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-secondary">{{ ticket.draw.round }}회차</span>
+          <span class="badge {% if ticket.mode == 'auto' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+            {{ ticket.get_mode_display }}
+          </span>
+        </div>
+        <div class="mb-2">
+          {% for n in ticket.get_numbers_list %}
+            {% if n <= 10 %}<span class="lotto-ball ball-1">{{ n }}</span>
+            {% elif n <= 20 %}<span class="lotto-ball ball-2">{{ n }}</span>
+            {% elif n <= 30 %}<span class="lotto-ball ball-3">{{ n }}</span>
+            {% elif n <= 40 %}<span class="lotto-ball ball-4">{{ n }}</span>
+            {% else %}<span class="lotto-ball ball-5">{{ n }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <small class="text-muted">구매일: {{ ticket.purchased_at|date:"Y-m-d H:i" }}</small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-info">아직 구매한 복권이 없습니다. <a href="{% url 'buy_ticket' %}">구매하러 가기</a></div>
+  {% endif %}
+</div>
+{% endblock %}
