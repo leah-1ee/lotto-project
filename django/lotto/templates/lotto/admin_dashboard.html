@@ -1,0 +1,44 @@
+{% extends 'lotto/base.html' %}
+{% block title %}관리자 대시보드{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h3 class="mb-4">📊 관리자 대시보드</h3>
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card text-center p-4">
+        <div class="fs-1 fw-bold text-primary">{{ total_tickets }}</div>
+        <div class="text-muted">총 판매 복권 수</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center p-4">
+        <div class="fs-1 fw-bold text-success">{{ total_draws }}</div>
+        <div class="text-muted">완료된 회차 수</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center p-4">
+        <div class="fs-1 fw-bold text-warning">
+          {% if latest_draw %}{{ latest_draw.round }}{% else %}-{% endif %}
+        </div>
+        <div class="text-muted">최근 완료 회차</div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <a href="{% url 'admin_draw' %}" class="btn btn-lotto w-100 py-3">🎲 추첨 관리</a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'admin_sales' %}" class="btn btn-outline-primary w-100 py-3">📦 판매 내역</a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'admin_results' %}" class="btn btn-outline-success w-100 py-3">🏆 당첨 내역</a>
+    </div>
+    <div class="col-md-3">
+      <a href="/django-admin/" class="btn btn-outline-secondary w-100 py-3">⚙️ Django 관리자</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
