@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}로또 6/45{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .navbar { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+    .navbar-brand { color: #ffd700 !important; font-weight: 700; font-size: 1.4rem; }
+    .nav-link { color: #ccc !important; }
+    .nav-link:hover { color: #ffd700 !important; }
+    .lotto-ball {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 42px; height: 42px; border-radius: 50%;
+      font-weight: 700; font-size: 0.95rem; color: white;
+      margin: 2px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    .ball-1  { background: #f5a623; }
+    .ball-2  { background: #7ed321; }
+    .ball-3  { background: #e74c3c; }
+    .ball-4  { background: #9b59b6; }
+    .ball-5  { background: #3498db; }
+    .ball-6  { background: #555; }
+    .ball-bonus { background: #e74c3c; border: 3px solid #ffd700; }
+    .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .btn-lotto {
+      background: linear-gradient(135deg, #ffd700, #f5a623);
+      border: none; color: #1a1a2e; font-weight: 700;
+    }
+    .btn-lotto:hover { background: linear-gradient(135deg, #f5a623, #e67e22); color: #fff; }
+    .hero { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 60px 0; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/">🎱 Lotto 6/45</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">📊 관리자</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'buy_ticket' %}">🎟 구매</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'my_tickets' %}">📋 내 복권</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'check_win' %}">🏆 당첨확인</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">로그아웃 ({{ user.username }})</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">로그인</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">회원가입</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-4">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="text-center text-muted py-4 mt-5">
+  <small>© 2025 Lotto 6/45 | Django + Docker Project</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
