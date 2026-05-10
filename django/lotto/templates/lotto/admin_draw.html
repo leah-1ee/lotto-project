@@ -1,0 +1,76 @@
+{% extends 'lotto/base.html' %}
+{% block title %}추첨 관리{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h3 class="mb-4">🎲 추첨 관리</h3>
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="card p-4 mb-3">
+        <h5>새 회차 생성</h5>
+        <p class="text-muted small">새 회차를 생성하면 사용자들이 복권을 구매할 수 있습니다.</p>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="create">
+          <button type="submit" class="btn btn-lotto w-100">+ 새 회차 생성</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="card p-4">
+        <h5>회차 목록</h5>
+        {% if draws %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr>
+              <th>회차</th><th>상태</th><th>당첨번호</th><th>추첨</th>
+            </tr></thead>
+            <tbody>
+            {% for draw in draws %}
+            <tr>
+              <td>{{ draw.round }}회차</td>
+              <td>
+                {% if draw.is_completed %}
+                  <span class="badge bg-success">완료</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">대기중</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if draw.is_completed %}
+                  {% for n in draw.get_numbers_list %}
+                    <span class="badge bg-secondary">{{ n }}</span>
+                  {% endfor %}
+                  <span class="badge bg-danger">+{{ draw.bonus }}</span>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not draw.is_completed %}
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="draw">
+                  <input type="hidden" name="draw_id" value="{{ draw.id }}">
+                  <button type="submit" class="btn btn-sm btn-danger"
+                    onclick="return confirm('{{ draw.round }}회차 추첨을 실행하시겠습니까?')">
+                    추첨 실행
+                  </button>
+                </form>
+                {% else %}
+                  <span class="text-muted small">{{ draw.drawn_at|date:"m/d H:i" }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <p class="text-muted">생성된 회차가 없습니다.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
