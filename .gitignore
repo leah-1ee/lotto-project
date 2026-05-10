@@ -20,5 +20,5 @@ media/
 # VS Code
 .vscode/
 
-# Mac
-.DS_Store
+# Virtual Environment
+venv/
