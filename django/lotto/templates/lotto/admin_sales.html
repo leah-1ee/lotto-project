@@ -1,0 +1,41 @@
+{% extends 'lotto/base.html' %}
+{% block title %}판매 내역{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h3 class="mb-4">📦 판매 내역</h3>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th><th>사용자</th><th>회차</th>
+              <th>번호</th><th>방식</th><th>구매일시</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ ticket.user.username }}</td>
+            <td>{{ ticket.draw.round }}회차</td>
+            <td>{{ ticket.numbers }}</td>
+            <td>
+              <span class="badge {% if ticket.mode == 'auto' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                {{ ticket.get_mode_display }}
+              </span>
+            </td>
+            <td>{{ ticket.purchased_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">판매 내역이 없습니다.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary mt-3">← 대시보드</a>
+</div>
+{% endblock %}
