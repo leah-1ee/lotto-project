@@ -1,0 +1,115 @@
+{% extends 'lotto/base.html' %}
+{% block title %}복권 구매{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:640px">
+  <h3 class="mb-4">🎟 복권 구매
+    {% if draw %}<small class="text-muted fs-6">— {{ draw.round }}회차</small>{% endif %}
+  </h3>
+
+  {% if not form %}
+    <div class="alert alert-warning">현재 구매 가능한 회차가 없습니다.</div>
+  {% else %}
+
+  <!-- 자동 구매 -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">🤖 자동 번호 구매</h5>
+      <p class="text-muted">컴퓨터가 1~45 중 6개를 무작위로 선택합니다.</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="mode" value="auto">
+        <button type="submit" class="btn btn-lotto px-4">자동 구매</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 수동 구매 -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">✏️ 수동 번호 구매</h5>
+      <p class="text-muted">1~45 중 6개 번호를 직접 입력하세요.</p>
+
+      <!-- 번호 선택 UI -->
+      <div class="mb-3">
+        <div id="ball-container" class="d-flex flex-wrap gap-2 mb-3">
+          {% for i in "123456789012345678901234567890123456789012345" %}{% endfor %}
+        </div>
+        <div id="ball-grid" class="d-flex flex-wrap gap-1 mb-3">
+        </div>
+        <p class="text-muted small">선택된 번호: <span id="selected-display" class="fw-bold text-primary">없음</span></p>
+      </div>
+
+      <form method="post" id="manual-form">
+        {% csrf_token %}
+        <input type="hidden" name="mode" value="manual">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ form.numbers.label }}</label>
+          <input type="text" name="numbers" id="numbers-input"
+                 class="form-control {% if form.numbers.errors %}is-invalid{% endif %}"
+                 placeholder="예: 1,7,15,23,38,45"
+                 value="{{ form.numbers.value|default:'' }}">
+          {% for error in form.numbers.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+          <div class="form-text">위 번호판을 클릭하거나 직접 입력하세요.</div>
+        </div>
+        <button type="submit" class="btn btn-lotto px-4">수동 구매</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const grid = document.getElementById('ball-grid');
+const input = document.getElementById('numbers-input');
+const display = document.getElementById('selected-display');
+let selected = [];
+
+const colors = [
+  '', 'ball-1','ball-1','ball-1','ball-1','ball-1',
+  'ball-1','ball-1','ball-1','ball-1','ball-1',
+  'ball-2','ball-2','ball-2','ball-2','ball-2',
+  'ball-2','ball-2','ball-2','ball-2','ball-2',
+  'ball-3','ball-3','ball-3','ball-3','ball-3',
+  'ball-3','ball-3','ball-3','ball-3','ball-3',
+  'ball-4','ball-4','ball-4','ball-4','ball-4',
+  'ball-4','ball-4','ball-4','ball-4','ball-4',
+  'ball-5','ball-5','ball-5','ball-5','ball-5',
+];
+
+for (let i = 1; i <= 45; i++) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = `lotto-ball ${colors[i]}`;
+  btn.style.cursor = 'pointer';
+  btn.style.opacity = '0.4';
+  btn.textContent = i;
+  btn.dataset.num = i;
+  btn.addEventListener('click', () => toggleBall(i, btn));
+  grid.appendChild(btn);
+}
+
+function toggleBall(num, btn) {
+  if (selected.includes(num)) {
+    selected = selected.filter(n => n !== num);
+    btn.style.opacity = '0.4';
+    btn.style.transform = '';
+  } else {
+    if (selected.length >= 6) {
+      alert('6개까지만 선택할 수 있습니다.');
+      return;
+    }
+    selected.push(num);
+    btn.style.opacity = '1';
+    btn.style.transform = 'scale(1.1)';
+  }
+  selected.sort((a,b) => a-b);
+  input.value = selected.join(',');
+  display.textContent = selected.length ? selected.join(', ') : '없음';
+}
+</script>
+{% endblock %}
